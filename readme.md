@@ -24,7 +24,12 @@ TODO:
 - Color the waveform based on spectral centroid, spectral content, etc.
 - Use randomized resampling?  Completely different, though.
 
-Related: https://github.com/endolith/freesound-thumbnailer
+Related: 
+
+- https://github.com/endolith/freesound-thumbnailer  
+- http://dsp.stackexchange.com/q/184/29
+
+Examples:
 
 Guitar pluck:
 
