@@ -33,16 +33,16 @@ Examples:
 
 Guitar pluck:
 
-![](https://farm1.staticflickr.com/306/19701397555_58444c1ee0_z.jpg)
+[![plot of guitar](https://farm1.staticflickr.com/306/19701397555_58444c1ee0_z.jpg)](https://flic.kr/p/w1WP7c)
 
 Violins:
 
-![](https://farm1.staticflickr.com/422/19737001541_09726ae0c5_z.jpg)
+[![plot of violins](https://farm1.staticflickr.com/422/19737001541_09726ae0c5_z.jpg)](https://flic.kr/p/w56hW2)
 
 Sine wave:
 
-![](https://farm1.staticflickr.com/417/19201290270_a91a64774e_z.jpg)
+[![plot of sine](https://farm1.staticflickr.com/417/19201290270_a91a64774e_z.jpg)](https://flic.kr/p/vfKCCN)
 
 Noise:
 
-![](https://farm1.staticflickr.com/395/19112954693_58b3ea3532_z.jpg)
+[![plot of noise](https://farm1.staticflickr.com/395/19112954693_58b3ea3532_z.jpg)](https://flic.kr/p/v7WTxB)
