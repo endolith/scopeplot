@@ -17,7 +17,7 @@ TODO:
 - Handle line segments that go outside the visible range
 - Handle circularity/end behavior as a parameter
  - Fix white dots at endpoints
-- Read files one chunk at a time, FFT resample each chunk to memory errors
+- Read files one chunk at a time, FFT resample each chunk to avoid memory errors
 - Show original samples as circular dots when zoomed in enough
 - Show RMS value (window parameter?)
 - Show (intersample) peak value
