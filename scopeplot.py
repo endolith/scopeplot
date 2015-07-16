@@ -97,7 +97,7 @@ def get_weights(N):
     return num/den
 
 
-def ihist(a, bins, range=None):
+def ihist(a, bins, range):
     """
     interpolated histogram
 
@@ -119,9 +119,6 @@ def ihist(a, bins, range=None):
 
     if a.size < 2 or a.size % 4 in {0, 3}:
         raise ValueError('not a valid size with overlap: {}'.format(a.size))
-
-    if range is None:
-        range = (a.min(), a.max())
 
     mn, mx = [mi + 0.0 for mi in range]  # Make float
 
