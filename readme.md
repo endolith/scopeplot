@@ -25,3 +25,19 @@ TODO:
 - Use randomized resampling?  Completely different, though.
 
 Related: https://github.com/endolith/freesound-thumbnailer
+
+Guitar pluck:
+
+![](https://farm1.staticflickr.com/306/19701397555_58444c1ee0_z.jpg)
+
+Violins:
+
+![](https://farm1.staticflickr.com/422/19737001541_09726ae0c5_z.jpg)
+
+Sine wave:
+
+![](https://farm1.staticflickr.com/417/19201290270_a91a64774e_z.jpg)
+
+Noise:
+
+![](https://farm1.staticflickr.com/395/19112954693_58b3ea3532_z.jpg)
