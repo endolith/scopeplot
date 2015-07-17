@@ -296,7 +296,6 @@ def test_ihist(SLOW_TESTS=False):
     Because of overlap, valid number of samples fed to hist are
     2, 5, 6, 9, 10, 13, 14, 17, 18, 21, 22, 25, 26, 29, 30, 33, ...
     """
-    assert_raises(ValueError, ihist, [], 5)
     assert_raises(ValueError, ihist, [], 3, (0, 1))
     assert_raises(ValueError, ihist, [1], 3, (0, 1))
     assert_raises(ValueError, ihist, [0.5], 3, (0, 1))
