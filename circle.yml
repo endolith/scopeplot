@@ -1,7 +1,0 @@
-dependencies:
-    pre:
-        - pip install pytest
-
-test:
-    override:
-        - py.test scopeplot.py
