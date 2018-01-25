@@ -16,7 +16,7 @@ from scipy.signal import resample
 RS = 2
 
 
-def ceildiv(a, b):
+def _ceildiv(a, b):
     """Ceiling integer division"""
     return -(-a // b)
 
@@ -73,13 +73,13 @@ def _next_regular(target):
     return match
 
 
-def get_weights(N):
+def _get_weights(N):
     """
     Sample weights for a chunk with N samples per chunk.  Determined by the
     amount a 1-pixel wide line centered on segment n would overlap the current
     pixel.
 
-    So get_weights(3) returns `[2/6, 4/6, 6/6, 4/6, 2/6]`, which means the
+    So _get_weights(3) returns `[2/6, 4/6, 6/6, 4/6, 2/6]`, which means the
     center segment will only affect this pixel, the first segment's width will
     overlap this pixel by 4/6, the last segment of the previous chunk will
     overlap this pixel by 2/6, etc.
@@ -97,7 +97,7 @@ def get_weights(N):
     return num/den
 
 
-def ihist(a, bins, range):
+def _ihist(a, bins, range):
     """
     interpolated histogram
 
@@ -143,7 +143,7 @@ def ihist(a, bins, range):
 
     out = np.zeros(bins)
 
-    weights = get_weights(len(a) // 2)
+    weights = _get_weights(len(a) // 2)
 
     for n in xrange(len(pairs)):
         w = weights[n]
@@ -202,7 +202,7 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
     x = pad(x, (0, pad_amount), 'constant')
 
     # Resample such that signal evenly divides into chunks of equal length
-    new_size = int(round(ceildiv(RS*N, width) * width / N * len(x)))
+    new_size = int(round(_ceildiv(RS*N, width) * width / N * len(x)))
     print('new size: {}'.format(new_size))
 
     x = resample(x, new_size)
@@ -217,7 +217,7 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
     else:
         raise ValueError('range not understood')
 
-    spp = ceildiv(N * RS, width)  # samples per pixel
+    spp = _ceildiv(N * RS, width)  # samples per pixel
     norm = 1/spp
 
     # Pad some zeros at beginning for overlap
@@ -235,7 +235,7 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
         chunk = x[n*spp:n*spp+chunksize]
         assert len(chunk)  # don't send empties
         try:
-            h = ihist(chunk, bins=height, range=(xmin, xmax))
+            h = _ihist(chunk, bins=height, range=(xmin, xmax))
         except ValueError:
             print('argh', len(chunk))
         else:
@@ -265,18 +265,18 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
 def test_get_weights():
     from numpy.testing import assert_raises, assert_allclose
 
-    assert_raises(ValueError, get_weights, -3)
-    assert_raises(ValueError, get_weights, 0)
+    assert_raises(ValueError, _get_weights, -3)
+    assert_raises(ValueError, _get_weights, 0)
 
-    assert_allclose(get_weights(1), [2/2])
-    assert_allclose(get_weights(2), [1/4, 3/4, 3/4, 1/4])
-    assert_allclose(get_weights(3), [2/6, 4/6, 6/6, 4/6, 2/6])
-    assert_allclose(get_weights(4), [1/8, 3/8, 5/8, 7/8, 7/8, 5/8, 3/8, 1/8])
-    assert_allclose(get_weights(5), [2/10, 4/10, 6/10, 8/10, 10/10,
-                                     8/10, 6/10, 4/10, 2/10])
+    assert_allclose(_get_weights(1), [2/2])
+    assert_allclose(_get_weights(2), [1/4, 3/4, 3/4, 1/4])
+    assert_allclose(_get_weights(3), [2/6, 4/6, 6/6, 4/6, 2/6])
+    assert_allclose(_get_weights(4), [1/8, 3/8, 5/8, 7/8, 7/8, 5/8, 3/8, 1/8])
+    assert_allclose(_get_weights(5), [2/10, 4/10, 6/10, 8/10, 10/10,
+                                      8/10, 6/10, 4/10, 2/10])
 
-    assert_allclose(np.sum(get_weights(101)), 101)
-    assert_allclose(np.sum(get_weights(10111)), 10111)
+    assert_allclose(np.sum(_get_weights(101)), 101)
+    assert_allclose(np.sum(_get_weights(10111)), 10111)
 
 
 def test_ihist(SLOW_TESTS=False):
@@ -284,71 +284,71 @@ def test_ihist(SLOW_TESTS=False):
                                assert_allclose)
 
     # Invalid bins=
-    assert_raises(ValueError, ihist, [],     (10, 4), (0, 10))
-    assert_raises(ValueError, ihist, [1, 2], (10, 4), (0, 10))
-    assert_raises(ValueError, ihist, [],     -5, (0, 10))
-    assert_raises(ValueError, ihist, [1, 2], -5, (0, 10))
-    assert_raises(ValueError, ihist, [],     5.7, (0, 10))
-    assert_raises(ValueError, ihist, [1, 2], 5.7, (0, 10))
+    assert_raises(ValueError, _ihist, [],     (10, 4), (0, 10))
+    assert_raises(ValueError, _ihist, [1, 2], (10, 4), (0, 10))
+    assert_raises(ValueError, _ihist, [],     -5, (0, 10))
+    assert_raises(ValueError, _ihist, [1, 2], -5, (0, 10))
+    assert_raises(ValueError, _ihist, [],     5.7, (0, 10))
+    assert_raises(ValueError, _ihist, [1, 2], 5.7, (0, 10))
 
     # Incorrect number of samples with overlap
     """
     Because of overlap, valid number of samples fed to hist are
     2, 5, 6, 9, 10, 13, 14, 17, 18, 21, 22, 25, 26, 29, 30, 33, ...
     """
-    assert_raises(ValueError, ihist, [], 3, (0, 1))
-    assert_raises(ValueError, ihist, [1], 3, (0, 1))
-    assert_raises(ValueError, ihist, [0.5], 3, (0, 1))
-    assert_raises(ValueError, ihist, [3, 2, 1], 5, (0, 5))
-    assert_raises(ValueError, ihist, [0.5, 0.5, 0.5, 0.5], 3, (0, 1))
-    assert_raises(ValueError, ihist, np.ones(31), 5, (0, 5))
+    assert_raises(ValueError, _ihist, [], 3, (0, 1))
+    assert_raises(ValueError, _ihist, [1], 3, (0, 1))
+    assert_raises(ValueError, _ihist, [0.5], 3, (0, 1))
+    assert_raises(ValueError, _ihist, [3, 2, 1], 5, (0, 5))
+    assert_raises(ValueError, _ihist, [0.5, 0.5, 0.5, 0.5], 3, (0, 1))
+    assert_raises(ValueError, _ihist, np.ones(31), 5, (0, 5))
 
     # 1 sample per pixel = 1 segment per pixel
-    assert_array_equal(ihist([2, 3], 3, (0, 3)), [0, 0, 1])
+    assert_array_equal(_ihist([2, 3], 3, (0, 3)), [0, 0, 1])
 
-    assert_allclose(ihist([3.8, 5.8], 7, (3.5, 7)),
+    assert_allclose(_ihist([3.8, 5.8], 7, (3.5, 7)),
                     [0.1, 0.25, 0.25, 0.25, 0.15, 0, 0])
 
-    assert_allclose(ihist([5.8, 3.8], 7, (3.5, 7)),
+    assert_allclose(_ihist([5.8, 3.8], 7, (3.5, 7)),
                     [0.1, 0.25, 0.25, 0.25, 0.15, 0, 0])
 
-    assert_allclose(ihist([0, 1], 5, (0, 1)), [1/5, 1/5, 1/5, 1/5, 1/5])
+    assert_allclose(_ihist([0, 1], 5, (0, 1)), [1/5, 1/5, 1/5, 1/5, 1/5])
 
-    assert_array_equal(ihist([5.5, 7], 10, (0, 10)),
+    assert_array_equal(_ihist([5.5, 7], 10, (0, 10)),
                        [0, 0, 0, 0, 0, 1/3, 2/3, 0, 0, 0])
 
-    assert_array_equal(ihist([0, 1], 5, (0, 5)),     [1, 0, 0, 0, 0])
-    assert_array_equal(ihist([3, 2], 5, (0, 5)),     [0, 0, 1, 0, 0])
-    assert_array_equal(ihist([4, 5], 5, (0, 5)),     [0, 0, 0, 0, 1])
-    assert_array_equal(ihist([0.5, 2.5], 3, (0, 3)), [1/4, 1/2, 1/4])
-    assert_array_equal(ihist([0.5, 1.5], 3, (0, 3)), [1/2, 1/2, 0])
+    assert_array_equal(_ihist([0, 1], 5, (0, 5)),     [1, 0, 0, 0, 0])
+    assert_array_equal(_ihist([3, 2], 5, (0, 5)),     [0, 0, 1, 0, 0])
+    assert_array_equal(_ihist([4, 5], 5, (0, 5)),     [0, 0, 0, 0, 1])
+    assert_array_equal(_ihist([0.5, 2.5], 3, (0, 3)), [1/4, 1/2, 1/4])
+    assert_array_equal(_ihist([0.5, 1.5], 3, (0, 3)), [1/2, 1/2, 0])
 
     # Single line appears in all one bin
-    assert_array_equal(ihist([0.5, 0.5], 3, (0, 1)), [0, 1, 0])
-    assert_array_equal(ihist([0.9, 0.9], 5, (0, 1)), [0, 0, 0, 0, 1])
+    assert_array_equal(_ihist([0.5, 0.5], 3, (0, 1)), [0, 1, 0])
+    assert_array_equal(_ihist([0.9, 0.9], 5, (0, 1)), [0, 0, 0, 0, 1])
 
     # Falls entirely on bin edge, so half in each neighboring bin
-    assert_array_equal(ihist([2, 2], 3, (0, 3)), [0, 0.5, 0.5])
+    assert_array_equal(_ihist([2, 2], 3, (0, 3)), [0, 0.5, 0.5])
 
     # Multiple segments, same value
     # 2 samples per pixel -> 5 samples per hist
-    assert_allclose(ihist(0.5*np.ones(5), 3, (0, 1)), [0, 1/4+3/4+3/4+1/4, 0])
+    assert_allclose(_ihist(0.5*np.ones(5), 3, (0, 1)), [0, 1/4+3/4+3/4+1/4, 0])
 
     # 3 samples per pixel -> 6 samples per hist
-    assert_allclose(ihist(0.5*np.ones(6), 3, (0, 1)),
+    assert_allclose(_ihist(0.5*np.ones(6), 3, (0, 1)),
                     [0, 1/3+2/3+1+2/3+1/3, 0])
 
     # 14 samples per pixel -> 29 samples per hist
-    assert_allclose(ihist(0.5*np.ones(29), 3, (0, 1)), [0, 14, 0])
-    assert_allclose(ihist(0.5*np.ones(29), 2, (0, 1)), [7, 7])
+    assert_allclose(_ihist(0.5*np.ones(29), 3, (0, 1)), [0, 14, 0])
+    assert_allclose(_ihist(0.5*np.ones(29), 2, (0, 1)), [7, 7])
 
     # 15 samples per pixel -> 30 samples per hist
-    assert_allclose(ihist(0.5*np.ones(30), 3, (0, 1)), [0, 15, 0])
-    assert_allclose(ihist(0.5*np.ones(30), 2, (0, 1)), [7.5, 7.5])
+    assert_allclose(_ihist(0.5*np.ones(30), 3, (0, 1)), [0, 15, 0])
+    assert_allclose(_ihist(0.5*np.ones(30), 2, (0, 1)), [7.5, 7.5])
 
     # Multiple segments, linear
     # 2 samples per pixel
-    assert_allclose(ihist([5, 4, 3, 2, 1], 4, (1, 5)),
+    assert_allclose(_ihist([5, 4, 3, 2, 1], 4, (1, 5)),
                     [1/4, 3/4, 3/4, 1/4])
 
     # TODO: WRITE MORE
@@ -370,7 +370,7 @@ def test_ihist(SLOW_TESTS=False):
         a = np.random.randn(chunksize)
         lower = np.amin(a) - 15*np.random.rand(1)[0]
         upper = np.amax(a) + 14*np.random.rand(1)[0]
-        assert_allclose(N, sum(ihist(a, bins, (lower, upper))))
+        assert_allclose(N, sum(_ihist(a, bins, (lower, upper))))
 
 
 if __name__ == '__main__':
