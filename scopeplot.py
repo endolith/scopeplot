@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sun May 24 00:10:45 2015
+Created on Sun May 24 2015
 
 Density plot of waveforms
 """
@@ -97,7 +96,7 @@ def _get_weights(N):
     return num/den
 
 
-def _ihist(a, bins, range):
+def _ihist(a, bins, range_):
     """
     interpolated histogram
 
@@ -106,7 +105,7 @@ def _ihist(a, bins, range):
 
     bins is number of bins to group them into vertically
 
-    range is total range of output, which may be wider than the widest values
+    range_ is total range of output, which may be wider than the widest values
     in a
     """
     a = asarray(a)
@@ -120,14 +119,15 @@ def _ihist(a, bins, range):
     if a.size < 2 or a.size % 4 in {0, 3}:
         raise ValueError('not a valid size with overlap: {}'.format(a.size))
 
-    mn, mx = [mi + 0.0 for mi in range]  # Make float
+    mn, mx = [mi + 0.0 for mi in range_]  # Make float
 
     if a.min() < mn or a.max() > mx:
-        raise NotImplementedError("values outside of range are not yet "
+        raise NotImplementedError("values outside of range_ are not yet "
                                   "supported {} {}".format(a.min(), a.max()))
 
     if (mn >= mx):
-        raise AttributeError('max must be larger than min in range parameter.')
+        raise AttributeError('max must be larger than '
+                             'min in range_ parameter.')
 
     bin_edges = linspace(mn, mx, bins+1, endpoint=True)
     bin_width = (mx - mn)/bins
@@ -145,7 +145,7 @@ def _ihist(a, bins, range):
 
     weights = _get_weights(len(a) // 2)
 
-    for n in xrange(len(pairs)):
+    for n in range(len(pairs)):
         w = weights[n]
         lo = bin_lower[n]
         hi = bin_upper[n]
@@ -157,7 +157,7 @@ def _ihist(a, bins, range):
                     out[lo-1] += w * 0.5
                     out[lo]   += w * 0.5
                 except IndexError:
-                    raise NotImplementedError('Values on edge of range')
+                    raise NotImplementedError('Values on edge of range_')
                     # TODO: Could handle this with more ifthens,
                     # but should be a smarter way
             else:
@@ -170,13 +170,13 @@ def _ihist(a, bins, range):
     return out
 
 
-def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
+def scopeplot(x, width=800, height=400, range_=None, cmap=None, plot=None):
     """
     x is the signal to be plotted
 
     width and height are the pixel dimensions of the output image
 
-    range is the vertical range of the plot.  If a tuple, it is (xmin, xmax),
+    range_ is the vertical range of the plot.  If a tuple, it is (xmin, xmax),
     if a single number, the range is (-range, range).  If None, it autoscales.
 
     cmap is colormap.  grayscale by default
@@ -207,15 +207,15 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
 
     x = resample(x, new_size)
 
-    if not range:
-        range = 1.1 * np.amax(np.abs(x))
+    if not range_:
+        range_ = 1.1 * np.amax(np.abs(x))
 
-    if np.size(range) == 1:
-        xmin, xmax = -range, +range
-    elif np.size(range) == 2:
-        xmin, xmax = range
+    if np.size(range_) == 1:
+        xmin, xmax = -range_, +range_
+    elif np.size(range_) == 2:
+        xmin, xmax = range_
     else:
-        raise ValueError('range not understood')
+        raise ValueError('range_ not understood')
 
     spp = _ceildiv(N * RS, width)  # samples per pixel
     norm = 1/spp
@@ -231,11 +231,11 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
         chunksize = 2*spp + 1  # (odd)
     print('spp: {}, chunk size: {}'.format(spp, chunksize))
 
-    for n in xrange(0, width):
+    for n in range(0, width):
         chunk = x[n*spp:n*spp+chunksize]
         assert len(chunk)  # don't send empties
         try:
-            h = _ihist(chunk, bins=height, range=(xmin, xmax))
+            h = _ihist(chunk, bins=height, range_=(xmin, xmax))
         except ValueError:
             print('argh', len(chunk))
         else:
@@ -245,7 +245,7 @@ def scopeplot(x, width=800, height=400, range=None, cmap=None, plot=None):
 
     X = X**(0.4)  # TODO: SUBJECTIVE
 
-    if isinstance(plot, basestring):
+    if isinstance(plot, str):
         plt.imsave(plot, X.T, cmap=cmap, origin='lower', format='png')
     elif plot:
         fig = plt.figure()
@@ -384,4 +384,4 @@ if __name__ == '__main__':
     plt.ylim(-2, 2)
     plt.plot(t, sig)
 
-    scopeplot(sig, range=2, plot=True)
+    scopeplot(sig, range_=2, plot=True)
