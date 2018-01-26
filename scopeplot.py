@@ -121,18 +121,33 @@ def _ihist(a, bins, range_):
 
 def scopeplot(x, width=800, height=400, range_=None, cmap=None, plot=None):
     """
-    x is the signal to be plotted
+    Plot a signal using brightness to indicate density.
 
-    width and height are the pixel dimensions of the output image
+    Parameters
+    ----------
+    x : array_like, 1-D
+        The signal to be plotted
+    width, height : int, optional
+        The width and height of the output image in pixels.  Default is
+        800×400.
+    range_ : float or 2-tuple of floats, optional
+        The vertical range of the plot.  If a tuple, it is (xmin, xmax).  If
+        a single number, the range is (-range, range).  If None, it autoscales.
+    cmap : str or matplotlib.colors.LinearSegmentedColormap, optional
+        A matplotlib colormap for
+        Grayscale by default.
+    plot : bool or str or None, optional
+        If plot is None, the X image array is returned.
+        if plot is True, the image is plotted directly.
+        If plot is a string, it represents a filename to save the image to
+        using matplotlib's `imsave`.
 
-    range_ is the vertical range of the plot.  If a tuple, it is (xmin, xmax),
-    if a single number, the range is (-range, range).  If None, it autoscales.
+    Returns
+    -------
+    X : ndarray of shape (width, height)
+        A 2D array of amplitude 0 to 1, representing the density of the signal
+        at that point.
 
-    cmap is colormap.  grayscale by default
-
-    if plot is None, returns the X image array
-    if plot is True, plots it directly
-    if plot is a string, represents a filename to save the image to
     """
 
     if cmap is None:
