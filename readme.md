@@ -37,7 +37,7 @@ Guitar pluck:
 
 Violins:
 
-[![plot of violins](https://farm1.staticflickr.com/422/19737001541_09726ae0c5_z.jpg)](https://flic.kr/p/w56hW2)
+[![plot of violins](https://c1.staticflickr.com/5/4741/39004191465_3a6908f435_z.jpg)](https://flic.kr/p/22qEFeK)
 
 Sine wave:
 
@@ -45,4 +45,4 @@ Sine wave:
 
 Noise:
 
-[![plot of noise](https://farm1.staticflickr.com/395/19112954693_58b3ea3532_z.jpg)](https://flic.kr/p/v7WTxB)
+[![plot of noise](https://c1.staticflickr.com/1/395/19112954693_bc4a597098_z.jpg)](https://flic.kr/p/v7WTxB)
