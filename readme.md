@@ -12,7 +12,8 @@ up into overlapping chunks, 1 for each pixel, then those are linear
 interpolated, with each line segment contributing to 1 or 2 pixels, depending
 on where it occurs in the chunk.
 
-TODO:
+To do
+-----
 
 - Handle line segments that go outside the visible range
 - Handle circularity/end behavior as a parameter
@@ -24,12 +25,14 @@ TODO:
 - Color the waveform based on spectral centroid, spectral content, etc.
 - Use randomized resampling?  Completely different, though.
 
-Related: 
+Related
+-------
 
 - https://github.com/endolith/freesound-thumbnailer  
 - http://dsp.stackexchange.com/q/184/29
 
-Examples:
+Examples
+--------
 
 Guitar pluck:
 
