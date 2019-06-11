@@ -49,3 +49,7 @@ Sine wave:
 Noise:
 
 [![plot of noise](https://c1.staticflickr.com/1/395/19112954693_bc4a597098_z.jpg)](https://flic.kr/p/v7WTxB)
+
+Triangle wave chirp showing it can deal with low-frequency waves, too:
+
+[![plot of triangle chirp](https://live.staticflickr.com/427/19078876704_5380c50eda_z.jpg)](https://flic.kr/p/v4Wem5)
