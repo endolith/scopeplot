@@ -66,13 +66,15 @@ def _ihist(a, bins, range_):
         raise ValueError("`bins` should be a positive integer.")
 
     if a.size < 2 or a.size % 4 in {0, 3}:
-        raise ValueError('not a valid size with overlap: {}'.format(a.size))
+        raise ValueError(f'not a valid size with overlap: {a.size}')
 
     mn, mx = [mi + 0.0 for mi in range_]  # Make float
 
     if a.min() < mn or a.max() > mx:
-        raise NotImplementedError("values outside of range_ are not yet "
-                                  "supported {} {}".format(a.min(), a.max()))
+        raise NotImplementedError(
+            f"values outside of range_ are not yet supported {a.min()} {a.max()}"
+        )
+
 
     if (mn >= mx):
         raise AttributeError('max must be larger than '
@@ -167,7 +169,7 @@ def scopeplot(x, width=800, height=400, range_=None, cmap=None, plot=None):
 
     # Resample such that signal evenly divides into chunks of equal length
     new_size = int(round(_ceildiv(RS*N, width) * width / N * len(x)))
-    print('new size: {}'.format(new_size))
+    print(f'new size: {new_size}')
 
     x = resample(x, new_size)
 
@@ -189,13 +191,10 @@ def scopeplot(x, width=800, height=400, range_=None, cmap=None, plot=None):
 
     X = np.empty((width, height))
 
-    if spp % 2:  # N is odd
-        chunksize = 2*spp  # (even)
-    else:  # N is even
-        chunksize = 2*spp + 1  # (odd)
-    print('spp: {}, chunk size: {}'.format(spp, chunksize))
+    chunksize = 2*spp if spp % 2 else 2*spp + 1
+    print(f'spp: {spp}, chunk size: {chunksize}')
 
-    for n in range(0, width):
+    for n in range(width):
         chunk = x[n*spp:n*spp+chunksize]
         assert len(chunk)  # don't send empties
         try:
@@ -232,12 +231,15 @@ def test_get_weights():
     assert_raises(ValueError, _get_weights, -3)
     assert_raises(ValueError, _get_weights, 0)
 
-    assert_allclose(_get_weights(1), [2/2])
+    assert_allclose(_get_weights(1), [1])
     assert_allclose(_get_weights(2), [1/4, 3/4, 3/4, 1/4])
-    assert_allclose(_get_weights(3), [2/6, 4/6, 6/6, 4/6, 2/6])
+    assert_allclose(_get_weights(3), [2/6, 4/6, 1, 4/6, 2/6])
     assert_allclose(_get_weights(4), [1/8, 3/8, 5/8, 7/8, 7/8, 5/8, 3/8, 1/8])
-    assert_allclose(_get_weights(5), [2/10, 4/10, 6/10, 8/10, 10/10,
-                                      8/10, 6/10, 4/10, 2/10])
+    assert_allclose(
+        _get_weights(5),
+        [2 / 10, 4 / 10, 6 / 10, 8 / 10, 1, 8 / 10, 6 / 10, 4 / 10, 2 / 10],
+    )
+
 
     assert_allclose(np.sum(_get_weights(101)), 101)
     assert_allclose(np.sum(_get_weights(10111)), 10111)
@@ -319,18 +321,12 @@ def test_ihist(SLOW_TESTS=False):
 
     # Random data sums correctly
     np.random.seed(42)  # deterministic tests
-    if SLOW_TESTS:
-        S = 100
-    else:
-        S = 1
+    S = 100 if SLOW_TESTS else 1
     for N in np.random.exponential(100000, size=S).astype('int'):
         if SLOW_TESTS:
             print(N, end=', ')
         bins = np.random.random_integers(1, 3000, 1)[0]  # numpy int32
-        if N % 2:  # N is odd
-            chunksize = 2*N  # (even)
-        else:  # N is even
-            chunksize = 2*N + 1  # (odd)
+        chunksize = 2*N if N % 2 else 2*N + 1
         a = np.random.randn(chunksize)
         lower = np.amin(a) - 15*np.random.rand(1)[0]
         upper = np.amax(a) + 14*np.random.rand(1)[0]
